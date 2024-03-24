@@ -1,10 +1,10 @@
 const Product = require("../models/productModel");
 const ErrorHandler = require("../utils/errorHandler");
-const catchAsycnErrors = require("../middleware/catchAsycnErrors");
+const catchAsyncErrors = require("../middleware/catchAsycnErrors");
 const ApiFeatures = require("../utils/apifeatures");
 
 // Create Product -- ADMIN
-exports.createProduct = catchAsycnErrors(async (req, res, next) => {
+exports.createProduct = catchAsyncErrors(async (req, res, next) => {
   req.body.user = req.user.id;
   const product = await Product.create(req.body);
 
@@ -15,7 +15,7 @@ exports.createProduct = catchAsycnErrors(async (req, res, next) => {
 });
 
 // Get All Products
-exports.getAllProducts = catchAsycnErrors(async (req, res) => {
+exports.getAllProducts = catchAsyncErrors(async (req, res) => {
   const resultPerPage = 5;
   const productsCount = await Product.countDocuments();
   const apiFeature = new ApiFeatures(Product.find(), req.query)
@@ -31,7 +31,7 @@ exports.getAllProducts = catchAsycnErrors(async (req, res) => {
 });
 
 // Get Product Details
-exports.getProductDetails = catchAsycnErrors(async (req, res, next) => {
+exports.getProductDetails = catchAsyncErrors(async (req, res, next) => {
   const product = await Product.findById(req.params.id);
 
   if (!product) {
@@ -45,7 +45,7 @@ exports.getProductDetails = catchAsycnErrors(async (req, res, next) => {
 });
 
 // Update Product -- ADMIN
-exports.updateProduct = catchAsycnErrors(async (req, res, next) => {
+exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
   let product = await Product.findById(req.params.id);
 
   if (!product) {
@@ -65,8 +65,7 @@ exports.updateProduct = catchAsycnErrors(async (req, res, next) => {
 });
 
 // Delete Product -- ADMIN
-
-exports.deleteProduct = catchAsycnErrors(async (req, res, next) => {
+exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
   const product = await Product.findById(req.params.id);
 
   if (!product) {
@@ -78,5 +77,53 @@ exports.deleteProduct = catchAsycnErrors(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Product Delete Successfully",
+  });
+});
+
+// Create new review or update the review
+exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
+  const { rating, comment, productId } = req.body;
+
+  if (!rating || !comment || !productId) {
+    return next(
+      new ErrorHandler(`Fill all the fields of Rating, Comment and ProductId`)
+    )
+  }
+  const review = {
+    user: req.user._id,
+    name: req.user.name,
+    rating: Number(rating),
+    comment,
+  };
+
+
+  const product = await Product.findById(productId);
+
+  const isReviewed = product.reviews.find(
+    (rev) => rev.user.toString() === req.user._id.toString()
+  );
+
+  if (isReviewed) {
+    product.reviews.forEach((rev) => {
+      if (rev.user.toString() === req.user._id.toString())
+        (rev.rating = rating), (rev.comment = comment);
+    });
+  } else {
+    product.reviews.push(review);
+    product.numOfReviews = product.reviews.length;
+  }
+
+  let avg = 0;
+
+  product.reviews.forEach((rev) => {
+    avg += rev.rating;
+  });
+
+  product.ratings = avg / product.reviews.length;
+
+  await product.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    success: true,
   });
 });
