@@ -6,7 +6,7 @@ const options = {
   burgerColorHover: "#eb4034",
   logo,
   logoWidth: "20vmax",
-  navColor1: "#e5e5e5",
+  navColor1: "white",
   logoHoverSize: "10px",
   logoHoverColor: "#eb4034",
   link1Text: "Home",
@@ -34,7 +34,7 @@ const options = {
   cartIconColorHover: "#eb4034",
   cartIconMargin: "1vmax",
   logoAnimationTime: ".5",
-  link1AnimationTime: ".5"
+  link1AnimationTime: ".5",
 };
 
 const Header = () => {
