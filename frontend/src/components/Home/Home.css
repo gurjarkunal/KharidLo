@@ -112,7 +112,7 @@
 
 .productCard:hover {
   box-shadow: 15px 14px 11px 8px rgb(161, 161, 161);
-
+  border: 2px solid rgb(117, 117, 117);
   transform: translateY(-1vmax);
 }
 @media screen and (max-width: 600px) {
