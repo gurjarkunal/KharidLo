@@ -5,6 +5,8 @@ import Product from "./Product";
 import MetaData from "../layouts/MetaData";
 import { getProduct } from "../../actions/productAction";
 import { useSelector, useDispatch } from "react-redux";
+import Loader from "../layouts/Loader/Loader";
+
 
 function Home() {
   const dispatch = useDispatch();
@@ -18,7 +20,7 @@ function Home() {
   return (
     <Fragment>
       {loading ? (
-        "loading"
+        <Loader />
       ) : (
         <Fragment>
           <MetaData title="KharidLo" />
