@@ -15,7 +15,7 @@ function Product({products}) {
     isHalf: true,
   }
   // console.log(products);
-  return <Link className="productCard" to={products._id}>
+  return <Link className="productCard" to={`/product/${products._id}`}>
     <img src={products.images[0].url} alt={products.name} />
     <p>{products.name}</p>
     <div>

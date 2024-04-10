@@ -3,19 +3,24 @@ import { TfiMouse } from "react-icons/tfi";
 import "./Home.css";
 import Product from "./Product";
 import MetaData from "../layouts/MetaData";
-import { getProduct } from "../../actions/productAction";
+import { getProduct, getProductDetails } from "../../actions/productAction";
 import { useSelector, useDispatch } from "react-redux";
 import Loader from "../layouts/Loader/Loader";
-
+import { useAlert } from "react-alert";
 
 function Home() {
+  const alert = useAlert();
   const dispatch = useDispatch();
   const { loading, error, products, productsCount } = useSelector(
     (state) => state.products
   );
   useEffect(() => {
+    if (error) {
+      return alert.error(error);
+    }
     dispatch(getProduct());
-  }, [dispatch]);
+    dispatch(getProductDetails());
+  }, [dispatch, error, alert]);
 
   return (
     <Fragment>
